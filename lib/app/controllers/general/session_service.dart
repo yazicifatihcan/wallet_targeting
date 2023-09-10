@@ -1,7 +1,8 @@
+
 import 'package:get/get.dart';
 import '../../constants/enum/cache_key_enum.dart';
 import '../../libs/locale_manager/locale_manager.dart';
-import '../../model/response/auth/user_info_model.dart';
+import '../../model/response/sign_in_response_model.dart';
 
 /*
 Uygulamada ziyaretçinin ya da üyenin aktif tüm oturum bilgileri yer alacak:
@@ -12,13 +13,14 @@ Uygulamada ziyaretçinin ya da üyenin aktif tüm oturum bilgileri yer alacak:
  */
 
 class SessionService extends GetxController {
-  final Rx<UserInfoModel> _currentUser = UserInfoModel().obs;
+  final Rx<User> _currentUser = User().obs;
   final Rx<bool?> _loggedIn = Rx(null);
   String? _token;
 
-  UserInfoModel get currentUser => _currentUser.value;
 
-  set currentUser(UserInfoModel value) {
+  User get currentUser => _currentUser.value;
+
+  set currentUser(User value) {
     _currentUser.firstRebuild = true;
     _currentUser.value = value;
   }
@@ -53,15 +55,15 @@ class SessionService extends GetxController {
       LocaleManager.instance.removeAt(CacheKey.token),
       setLoggedIn(false),
     ]);
-    currentUser = UserInfoModel();
+    currentUser = User();
   }
 
   /// Kullanıcı giriş yapılıdığında çağırılır
-  Future<void> logIn(GetUserInfoModel _currentUser) async {
-    currentUser = _currentUser.data!;
+  Future<void> logIn({required User loggedInUser, required String token}) async {
+    currentUser = loggedInUser;
     await Future.wait([
       setLoggedIn(true),
-      setUserToken(_currentUser.token!),
+      setUserToken(token),
     ]);
   }
 }

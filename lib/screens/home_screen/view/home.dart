@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_base_project/app/constants/enum/loading_status_enum.dart';
 import 'package:flutter_base_project/app/extensions/widgets_scale_extension.dart';
 import 'package:flutter_base_project/app/theme/color/app_colors.dart';
 import 'package:flutter_base_project/app/theme/text_style/text_style.dart';
@@ -30,45 +31,47 @@ class Home extends StatelessWidget {
         title: 'Game Launcher',
       ),
       endDrawer: const DrawerScreen(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: paddingXL),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: paddingM),
+      body: Obx(() => controller.loadingStatus != LoadingStatus.Loaded
+          ? const SizedBox.shrink()
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: paddingXL),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Welcome back,',
-                      style: s28W500LightPrimary,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: paddingM),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Welcome back,',
+                            style: s28W500LightPrimary,
+                          ),
+                          Text('dev@claudepeak.com', style: s28W800LightPrimary),
+                          const SizedBox(height: paddingM),
+                          Obx(() => TwoOptionSwitchButton(
+                                firstTitle: 'Available',
+                                secondTitle: 'Unavailable',
+                                onTapSwitch: controller.onTapChangeTab,
+                                selectedValue: controller.selectedIndex,
+                              )),
+                          const SizedBox(height: paddingM),
+                        ],
+                      ),
                     ),
-                    Text('dev@claudepeak.com', style: s28W800LightPrimary),
-                    const SizedBox(height: paddingM),
-                    Obx(() => TwoOptionSwitchButton(
-                          firstTitle: 'Available',
-                          secondTitle: 'Unavailable',
-                          onTapSwitch: controller.onTapChangeTab,
-                          selectedValue: controller.selectedIndex,
-                        )),
-                    const SizedBox(height: paddingM),
+                    Obx(() => controller.selectedIndex == 0
+                        ? _AvailableView(
+                            controller: controller,
+                          )
+                        : _UnavailableView(
+                            controller: controller,
+                          )),
                   ],
                 ),
               ),
-              Obx(() => controller.selectedIndex == 0
-                  ? _AvailableView(
-                      controller: controller,
-                    )
-                  : _UnavailableView(
-                      controller: controller,
-                    )),
-            ],
-          ),
-        ),
-      ),
+            )),
     );
   }
 }

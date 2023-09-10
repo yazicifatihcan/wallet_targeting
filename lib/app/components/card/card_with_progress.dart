@@ -25,44 +25,49 @@ class CardWithProgress extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(radiusM),
-              image: DecorationImage(
-                  image: Image.network(
-                    imageUrl,
-                  ).image,
-                  fit: BoxFit.cover),
+      child: SizedBox(
+        width: 182.horizontalScale,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(radiusM),
+                image: DecorationImage(
+                    image: Image.network(
+                      imageUrl,
+                    ).image,
+                    fit: BoxFit.cover),
+              ),
+              child: SizedBox(
+                height: 140.verticalScale,
+                width: 182.horizontalScale,
+              ),
             ),
-            child: SizedBox(
-              height: 140.verticalScale,
-              width: 182.horizontalScale,
+            const SizedBox(height: paddingXS),
+            Text(
+              gameName,
+              style: s16W700Dark.copyWith(color: AppColor.grey),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-          ),
-          const SizedBox(height: paddingXS),
-          Text(
-            gameName,
-            style: s16W700Dark.copyWith(color: AppColor.grey),
-          ),
-          const SizedBox(height: paddingXS),
-          SizedBox(
-              width: 182.horizontalScale,
-              child: Row(
-                children: [
-                  const Expanded(child: ProgressWidget(total: 100, current: 75)),
-                  const SizedBox(
-                    width: paddingXS,
-                  ),
-                  Text(
-                    '${currentProgress.removeTrailingZeros()}/${totalProgress.removeTrailingZeros()}',
-                    style: s12W500Dark.copyWith(color: AppColor.greenColor),
-                  ),
-                ],
-              )),
-        ],
+            const SizedBox(height: paddingXS),
+            SizedBox(
+                width: 182.horizontalScale,
+                child: Row(
+                  children: [
+                    const Expanded(child: ProgressWidget(total: 100, current: 75)),
+                    const SizedBox(
+                      width: paddingXS,
+                    ),
+                    Text(
+                      '${currentProgress.removeTrailingZeros()}/${totalProgress.removeTrailingZeros()}',
+                      style: s12W500Dark.copyWith(color: AppColor.greenColor),
+                    ),
+                  ],
+                )),
+          ],
+        ),
       ),
     );
   }

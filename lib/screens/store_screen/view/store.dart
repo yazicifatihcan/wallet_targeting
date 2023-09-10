@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_base_project/app/components/other/field_tile.dart';
+import 'package:flutter_base_project/app/constants/enum/loading_status_enum.dart';
 import 'package:flutter_base_project/app/extensions/widgets_scale_extension.dart';
 import 'package:get/get.dart';
 import '../../../app/components/app_bar/general_app_bar.dart';
@@ -24,36 +25,42 @@ class Store extends StatelessWidget {
         title: 'Store',
       ),
       endDrawer: const DrawerScreen(),
-      body: SingleChildScrollView(
+      body: Obx(()=>
+      controller.loadingStatus!=LoadingStatus.Loaded ? const SizedBox.shrink() : 
+      SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: paddingXL),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: Image.network(
-                              'https://fastly.picsum.photos/id/468/200/300.jpg?hmac=_y9LVzJfrmELvOun_dpNOKoPajv8_vT3t3IPS6Jbhk4')
-                          .image,
-                      fit: BoxFit.cover),
-                ),
-                child: SizedBox(
+            children: [SizedBox(
                   width: double.infinity,
                   height: 180.verticalScale,
+                  child: PageView(
+                        onPageChanged: (page) => controller.selectedIndex = page,
+                        scrollDirection: Axis.horizontal,
+                        children: List.generate(
+                          controller.carousel.length,
+                          (index) => GestureDetector(
+                            onTap: ()=>controller.onTapStoreCard(controller.carousel[index].id!),
+                            child: Image.network(
+                              controller.carousel[index].imageUrl!,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
                 ),
-              ),
               const SizedBox(
                 height: paddingXS,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
-                    4,
-                    (index) => DotIndicator(
-                          isSelected: index == 1,
-                        )),
+                    controller.carousel.length,
+                    (index) => Obx(()=>DotIndicator(
+                          isSelected: index == controller.selectedIndex,
+                        ))),
               ),
               const SizedBox(
                 height: paddingM,
@@ -70,36 +77,45 @@ class Store extends StatelessWidget {
                       child: ListView.separated(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) => Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(radiusM),
-                                      image: DecorationImage(
-                                          image: Image.network(
-                                                  'https://fastly.picsum.photos/id/468/200/300.jpg?hmac=_y9LVzJfrmELvOun_dpNOKoPajv8_vT3t3IPS6Jbhk4')
-                                              .image,
-                                          fit: BoxFit.cover),
+                          itemBuilder: (context, index) {
+
+                            final item = controller.storeItems[index];
+
+                            return GestureDetector(
+                              onTap: ()=>controller.onTapStoreCard(item.id!),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(radiusM),
+                                        image: DecorationImage(
+                                            image: Image.network(
+                                                    item.imageUrl!)
+                                                .image,
+                                            fit: BoxFit.cover),
+                                      ),
+                                      child: SizedBox(
+                                        width: double.infinity,
+                                        height: 150.horizontalScale,
+                                      ),
                                     ),
-                                    child: SizedBox(
-                                      width: 350.horizontalScale,
-                                      height: 150.horizontalScale,
+                                    const SizedBox(
+                                      height: paddingXXXS,
                                     ),
-                                  ),
-                                  const SizedBox(
-                                    height: paddingXXXS,
-                                  ),
-                                  Text(
-                                    'Nft Item Name',
-                                    style: s16W700Dark.copyWith(color: AppColor.grey),
-                                  ),
-                                ],
-                              ),
+                                    Center(
+                                      child: Text(
+                                        item.title!,
+                                        style: s16W700Dark.copyWith(color: AppColor.grey),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                            );},
                           separatorBuilder: (context, index) => const SizedBox(
                                 height: paddingXL,
                               ),
-                          itemCount: 10),
+                          itemCount: controller.storeItems.length),
                     ),
                   ],
                 ),
@@ -107,7 +123,7 @@ class Store extends StatelessWidget {
             ],
           ),
         ),
-      ),
+      )),
     );
   }
 }

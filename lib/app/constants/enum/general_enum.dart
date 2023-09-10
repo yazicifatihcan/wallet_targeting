@@ -5,7 +5,7 @@ enum AppEnvironment {
 }
 
 /// Http işlemerinde kullanılmakta
-enum HttpMethod { get, post, put, delete, update }
+enum HttpMethod { GET, POST, PUT, DELETE, UPDATE }
 
 enum DeviceType { IOS, ANDROID, WINDOWS, FUCHSIA, MACOS }
 

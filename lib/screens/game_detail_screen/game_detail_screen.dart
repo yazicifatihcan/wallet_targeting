@@ -9,7 +9,7 @@ class GameDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
-      init: GameDetailController(),
+      init: GameDetailController(id: ModalRoute.of(context)!.settings.arguments as String),
       builder: (_) => const GameDetail(),
     );
   }

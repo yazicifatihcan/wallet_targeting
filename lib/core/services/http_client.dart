@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../../app/constants/app/http_url.dart';
@@ -37,6 +39,7 @@ class HttpClient extends IHttpClient {
         bodyParam,
       ),
     );
+    _logS('{${httpMethod.name.toUpperCase()}} ' + HttpUrl.baseUrl + '/' + method, headerParam, response!.statusCode, jsonEncode(bodyParam), response.body);
     if (response!.statusCode >= HttpStatus.clientClosedRequest &&
         response.statusCode < HttpStatus.networkConnectTimeoutError) {
       throw ServerError();
@@ -53,7 +56,7 @@ class HttpClient extends IHttpClient {
   }) async {
     final http.Response? response;
     switch (httpMethod) {
-      case HttpMethod.get:
+      case HttpMethod.GET:
         response = await get(
           method,
           headerParam: headerParam,
@@ -61,7 +64,7 @@ class HttpClient extends IHttpClient {
           baseUrl: baseUrl,
         );
         break;
-      case HttpMethod.post:
+      case HttpMethod.POST:
         response = await post(
           method,
           headerParam: headerParam,
@@ -69,7 +72,7 @@ class HttpClient extends IHttpClient {
           baseUrl: baseUrl,
         );
         break;
-      case HttpMethod.put:
+      case HttpMethod.PUT:
         response = await put(
           method,
           headerParam: headerParam,
@@ -77,7 +80,7 @@ class HttpClient extends IHttpClient {
           baseUrl: baseUrl,
         );
         break;
-      case HttpMethod.delete:
+      case HttpMethod.DELETE:
         response = await delete(
           method,
           headerParam: headerParam,
@@ -85,7 +88,7 @@ class HttpClient extends IHttpClient {
           baseUrl: baseUrl,
         );
         break;
-      case HttpMethod.update:
+      case HttpMethod.UPDATE:
         response = await update(
           method,
           headerParam: headerParam,
@@ -113,3 +116,14 @@ class HttpClient extends IHttpClient {
     }
   }
 }
+
+
+  void _logS(String url, Map<String, String>? header, int statusCode, String request, String response) {
+    log('_______________________________ Http Start ________________________________', name: 'Http');
+    log('Api Request Url: $url', name: 'Http');
+    log('Header: ${jsonEncode(header)}', name: 'Http');
+    log('Status Code: $statusCode', name: 'Http');
+    log('Request: $request', name: 'Http');
+    log('Response: $response', name: 'Http');
+    log('________________________________ Http End _________________________________', name: 'Http');
+  }

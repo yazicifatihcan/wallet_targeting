@@ -1,45 +1,48 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_base_project/app/constants/enum/loading_status_enum.dart';
-import 'package:flutter_base_project/app/navigation/route/route.dart';
+import 'package:flutter_base_project/app/model/response/store_item_response_model.dart';
+import 'package:flutter_base_project/screens/home_screen/controller/home_controller.dart';
 import 'package:get/get.dart';
 
 import '../../../app/bl/general.dart';
 import '../../../app/components/dialog/loading_progress.dart';
+import '../../../app/constants/enum/loading_status_enum.dart';
 import '../../../app/model/response/all_store_response_model.dart';
+import '../../../app/navigation/route/route.dart';
 import '../../../core/exception/app_exception.dart';
 import '../../../core/i10n/i10n.dart';
 
-class HomeController extends GetxController {
+class NftDetailController extends GetxController {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   
   BuildContext get context => scaffoldKey.currentContext!;  
 
-  final Rx<int> _selectedIndex = 0.obs;
   final Rx<LoadingStatus> _loadingStatus = Rx(LoadingStatus.Init);
-  final Rx<List<AllStoreResponseModel>> _availableAllStore = Rx([]);
+  final Rx<StoreItemResponseModel> _itemDetail = Rx(StoreItemResponseModel());
   final Rx<List<AllStoreResponseModel>> _notAvailableAllStore = Rx([]);
-
-
-  int get selectedIndex => _selectedIndex.value;
-  set selectedIndex(int value)=>_selectedIndex.value=value;
 
   LoadingStatus get loadingStatus => _loadingStatus.value;
   set loadingStatus(LoadingStatus value) => _loadingStatus.value=value;
 
-  List<AllStoreResponseModel> get availableAllStore => _availableAllStore.value;
-  set availableAllStore(List<AllStoreResponseModel> value) => _availableAllStore.value=value;
+  StoreItemResponseModel get itemDetail => _itemDetail.value;
+  set itemDetail(StoreItemResponseModel value) => _itemDetail.value=value;
 
   List<AllStoreResponseModel> get notAvailableAllStore => _notAvailableAllStore.value;
   set notAvailableAllStore(List<AllStoreResponseModel> value) => _notAvailableAllStore.value=value;
 
+  late String id;
+
+  NftDetailController({required this.id});
 
   @override
   void onReady() async {
     super.onReady();
     try {
+      Get.put(HomeController());
       loadingStatus = LoadingStatus.Loading;
       LoadingProgress.start();
-      await getAllAvailableStore();
+      await getItemDetail();
       await getAllNotAvailableStore();
       LoadingProgress.stop();
       loadingStatus = LoadingStatus.Loaded;
@@ -49,10 +52,10 @@ class HomeController extends GetxController {
     }
   }
 
-  Future<void> getAllAvailableStore() async {
-    final response = await General().getAllStore(available: true);
+  Future<void> getItemDetail() async {
+    final response = await General().storeItemDetail(id);
     if (response.status == BaseModelStatus.Ok) {
-      availableAllStore = response.data!;
+      itemDetail = response.data!;
     } else {
       throw AppException(response.message ?? AppLocalization.getLabels.defaultErrorMessage);
     }
@@ -67,17 +70,13 @@ class HomeController extends GetxController {
     }
   }
 
-
-
-  void onTapDrawer(){
-    scaffoldKey.currentState!.openEndDrawer();
-  }
-
-  onTapChangeTab(int index){
-    selectedIndex=index;
-  }
-
   onTapGameCard(String id){
-    Navigator.pushNamed(context, MainScreensEnum.gameDetailScreen.path,arguments: id);
+    Navigator.pushReplacementNamed(context, MainScreensEnum.gameDetailScreen.path,arguments: id);
   }
+
+  int getRandomNumber(){
+    Random random = new Random();
+    return random.nextInt(100);
+  }
+
 }

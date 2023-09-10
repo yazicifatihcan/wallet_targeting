@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_base_project/app/components/message/toast_message.dart';
 import 'package:flutter_base_project/app/extensions/context_extension.dart';
+import 'package:flutter_base_project/app/model/request/sign_in_request_model.dart';
 import 'package:flutter_base_project/app/navigation/route/route_factory.dart';
 import 'package:flutter_base_project/screens/navigation/drawer/drawer_item/controller/drawer_controller.dart';
 import 'package:get/get.dart';
+import '../../../../app/bl/general.dart';
+import '../../../../app/constants/enum/loading_status_enum.dart';
 import '../../../../app/controllers/general/session_service.dart';
 import '../../../../app/navigation/route/route.dart';
 import '../../../../core/exception/app_exception.dart';
@@ -44,11 +48,7 @@ class SplashController extends GetxController {
     try {
       // await checkInternet();
 
-      
-
-      if (sessionService.isUserLogin()) {
-        await _getUser(sessionService);
-      }
+      await _getUser(sessionService);
 
       future.whenComplete(() async{
         Navigator.pushNamedAndRemoveUntil(context, MainScreensEnum.mainScreen.path, (route) => false);
@@ -57,17 +57,20 @@ class SplashController extends GetxController {
       // sessionService.logOut();
       // Navigator.pushNamed(context, MainScreensEnum.loginScreen.path);
     }catch (e) {
-      
+      showErrorToastMessage(e.toString());
     }
   }
 
   Future<void> _getUser(SessionService sessionService) async {
-    // final response = await General().getCurrentUser();
-    // if (response.status == BaseModelStatus.Ok) {
-    //   await sessionService.logIn(response.data!);
-    // } else {
-    //   throw UserLoginException();
-    // }
+    final signInRequestModel = SignInRequestModel(email: 'alper-mf@hotmail.com', password: '123456789', fcmToken: '');
+    final response = await General().signIn(
+      signInRequestModel: signInRequestModel
+    );
+    if (response.status == BaseModelStatus.Ok) {
+      await sessionService.logIn(loggedInUser: response.data!.user!, token: response.data!.accessToken!);
+    } else {
+      throw UserLoginException();
+    }
   }
 
   // Future<String> _getRemoteVersion() async {

@@ -9,6 +9,7 @@ typedef PageRouteFun = PageRoute Function(RouteSettings);
 enum MainScreensEnum {
   init('/'),
   gameDetailScreen('/gameDetail'),
+  nftDetailScreen('/nfDetail'),
   mainScreen('/mainScreen');
 
   const MainScreensEnum(this.path);
@@ -19,6 +20,7 @@ enum MainScreensEnum {
 Map<String, PageRouteFun> mainRoutesMap = {
   MainScreensEnum.init.path: (_) => goToPage(const SplashScreen(), _),
   MainScreensEnum.gameDetailScreen.path: (_) => goToPage(const GameDetailScreen(), _),
+  MainScreensEnum.nftDetailScreen.path: (_) => goToPage(const NftDetailScreen(), _),
   MainScreensEnum.mainScreen.path: (_) => goToPage(const MainScreen(), _),
 };
 

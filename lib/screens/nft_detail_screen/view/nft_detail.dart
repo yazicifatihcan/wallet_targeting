@@ -1,33 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_base_project/app/constants/assets/assets.dart';
-import 'package:flutter_base_project/app/constants/enum/loading_status_enum.dart';
 import 'package:flutter_base_project/app/extensions/widget_extension.dart';
 import 'package:flutter_base_project/app/extensions/widgets_scale_extension.dart';
-import 'package:flutter_base_project/app/libs/app/size_config.dart';
-import 'package:flutter_base_project/app/theme/color/app_colors.dart';
-import 'package:flutter_base_project/app/theme/text_style/text_style.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import '../../../app/components/button/base_button.dart';
+import '../../../app/constants/assets/assets.dart';
+import '../../../app/constants/enum/loading_status_enum.dart';
 import '../../../app/constants/other/padding_and_radius_size.dart';
-import '../../nft_detail_screen/view/components/available_store_bottom_sheet.dart';
-import '../controller/game_detail_controller.dart';
-
-class GameDetail extends StatelessWidget {
-  const GameDetail({Key? key}) : super(key: key);
+import '../../../app/libs/app/size_config.dart';
+import '../../../app/theme/color/app_colors.dart';
+import '../../../app/theme/text_style/text_style.dart';
+import '../controller/nft_detail_controller.dart';
+import 'components/available_store_bottom_sheet.dart';
+  
+class NftDetail extends StatelessWidget {
+  const NftDetail({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<GameDetailController>();
+    final controller = Get.find<NftDetailController>();
     return Scaffold(
       key: controller.scaffoldKey,
-      floatingActionButton: Padding(
+      floatingActionButton: Obx(()=>Padding(
         padding: const EdgeInsets.symmetric(vertical: paddingXL, horizontal: paddingM),
-        child: Obx(()=>BaseButton.primary(
-          txt: 'GET NFT ON STORE',
-          onTap: ()=>AvailableStoreBottomSheet().openBottomSheet(backgroundColor: AppColor.background),
-        ).isVisible(controller.isAlreadyEarned()&&controller.loadingStatus==LoadingStatus.Loaded)),
-      ),
+        child: BaseButton.primary(
+              txt: 'View Available Stores',
+              onTap: () => AvailableStoreBottomSheet().openBottomSheet(backgroundColor: AppColor.background),
+            ),
+      ).isVisible(controller.loadingStatus==LoadingStatus.Loaded)),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: Obx(()=>
       controller.loadingStatus!=LoadingStatus.Loaded ? const SizedBox.shrink() :
@@ -43,7 +43,7 @@ class GameDetail extends StatelessWidget {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                          image: Image.network(controller.gameDetail.imageUrls![0]).image, fit: BoxFit.cover),
+                          image: Image.network(controller.itemDetail.imageUrl!).image, fit: BoxFit.cover),
                     ),
                     child: SizedBox(
                       width: SizeConfig.screenWidth,
@@ -69,7 +69,7 @@ class GameDetail extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: paddingM),
                       child: Text(
-                        controller.gameDetail.title!,
+                        controller.itemDetail.title!,
                         style: s26W700Dark,
                       ),
                     )),
@@ -151,7 +151,7 @@ class GameDetail extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: paddingM),
               child: Text(
-                controller.gameDetail.content!,
+                controller.itemDetail.content!,
                 style: s14W300Dark.copyWith(color: Colors.white),
               ),
             ),
@@ -167,16 +167,16 @@ class GameDetail extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
 
-                    final item = controller.gameCriterias[index];
+                    final item = controller.notAvailableAllStore[index];
 
                     return GestureDetector(
-                      onTap: ()=>controller.onTapNfc(item.id!),
+                      onTap: ()=>controller.onTapGameCard(item.id!),
                       child: DecoratedBox(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(radiusM),
                         image: DecorationImage(
                             image: Image.network(
-                              item.imageUrl!,
+                              item.imageUrls![0],
                             ).image,
                             fit: BoxFit.cover),
                       ),
@@ -189,7 +189,7 @@ class GameDetail extends StatelessWidget {
                   separatorBuilder: (context, index) => const SizedBox(
                     width: paddingXS,
                   ),
-                  itemCount: controller.gameCriterias.length,
+                  itemCount: controller.notAvailableAllStore.length,
                 ),
               ),
             ),

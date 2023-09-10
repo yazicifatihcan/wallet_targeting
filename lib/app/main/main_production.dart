@@ -12,10 +12,9 @@ import 'bootstrap/bootstrap.dart';
 /// flutter build appbundle --release --flavor product lib/app/main/main_production.dart
 void main() {
   environment = AppEnvironment.Production;
-  HttpUrl.baseUrl = 'prod009.siparisim.dev';
+  HttpUrl.baseUrl = 'wallettargeting.azurewebsites.net';
 
   bootstrap(
-    'https://sandbox.siparisim.dev/kafka/loki/app',
-    const App(title: 'Sbcli Example App'),
+    const App(title: 'Walet-Targeting'),
   );
 }
